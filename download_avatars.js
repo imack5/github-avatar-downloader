@@ -1,10 +1,13 @@
 var request = require('request');
 var fs = require('fs');
-var password = require('./secrets.js');
 var args = process.argv.slice(2);
 
+//imports the important token info
+var password = require('./secrets.js');
+
 console.log('Welcome to the GitHub Avatar Downloader!');
-//console.log(password);
+
+//Throws an error if there are not enough input params
 if(args.length < 2){
   throw "Not enough paramaters!!!";
 }
@@ -24,12 +27,13 @@ function getRepoContributors(repoOwner, repoName, cb) {
   });
 }
 
+//A function that requests a download to the file path from the url found in the input params
 function downloadImageByURL(url, filePath) {
   request.get(url)
   .pipe(fs.createWriteStream(filePath));
 }
 
-
+//Downloads and converts a JSON file containing all of the contributors information
 getRepoContributors(args[0], args[1], function(err, result) {
 
   var contributors = JSON.parse(result);
@@ -40,6 +44,7 @@ getRepoContributors(args[0], args[1], function(err, result) {
   //prints out all of the contributers and their avatar url
   contributors.forEach(function(element, index){
 
+    //forEach contributors element, downloads the avatar picture and confirms via a console.log()
     downloadImageByURL(element.avatar_url, `avatars/${element.login}.jpg`);
     console.log(`Downloaded ${element.login}.jpg`);
 
