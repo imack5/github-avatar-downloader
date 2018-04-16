@@ -1,9 +1,13 @@
 var request = require('request');
 var fs = require('fs');
 var password = require('./secrets.js');
+var args = process.argv.slice(2);
 
 console.log('Welcome to the GitHub Avatar Downloader!');
 //console.log(password);
+if(args.length < 2){
+  throw "Not enough paramaters!!!";
+}
 
 //accesses the JSON string of the contributors of a specified repo
 function getRepoContributors(repoOwner, repoName, cb) {
