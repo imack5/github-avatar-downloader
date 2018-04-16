@@ -1,8 +1,9 @@
 var request = require('request');
 var fs = require('fs');
-var password = require('./secrets.js')
+var password = require('./secrets.js');
 
 console.log('Welcome to the GitHub Avatar Downloader!');
+//console.log(password);
 
 //accesses the JSON string of the contributors of a specified repo
 function getRepoContributors(repoOwner, repoName, cb) {
@@ -19,7 +20,14 @@ function getRepoContributors(repoOwner, repoName, cb) {
   });
 }
 
+function downloadImageByURL(url, filePath) {
+  request.get(url)
+  .pipe(fs.createWriteStream(filePath));
+}
+
+
 getRepoContributors("jquery", "jquery", function(err, result) {
+
   var contributors = JSON.parse(result);
 
   //prints out any erros associated with accessing the information
@@ -27,17 +35,14 @@ getRepoContributors("jquery", "jquery", function(err, result) {
 
   //prints out all of the contributers and their avatar url
   contributors.forEach(function(element, index){
-    console.log('#' + (index + 1), '\b:' + element.login, '--', element.avatar_url );
+
+    downloadImageByURL(element.avatar_url, `avatars/${element.login}.jpg`);
+    console.log(`Downloaded ${element.login}.jpg`);
 
   });
 });
 
-function downloadImageByURL(url, filePath) {
-  request.get(url)
 
-  .on('response', function(){ console.log("Downloading Image");})
 
-  .pipe(fs.createWriteStream(filePath));
-}
 
-downloadImageByURL("https://avatars2.githubusercontent.com/u/2741?v=3&s=466", "./kvirani.jpg");
+//downloadImageByURL("https://avatars2.githubusercontent.com/u/2741?v=3&s=466", "./kvirani.jpg");
